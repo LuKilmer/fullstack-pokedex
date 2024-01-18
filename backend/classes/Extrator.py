@@ -20,15 +20,19 @@ class Extrator:
             raise Exception('Erro ao extrair nome do elemento html')
         
     def get_dados_pokemon(elemento_html: BeautifulSoup):
-        pokemon = Pokemon()
         tag_html = elemento_html.find('main', id='main')
         nome = tag_html.find('h1')
         status = tag_html.find_all('table',class_="vitals-table")[3]
         status_nome = status.find_all('th')
         status_num = status.find_all('td', class_="cell-num")
+        status_list = []
         for i in range(6):
-            print(f"{status_nome[i].text} = {status_num[i*3].text} | min: {status_num[i*3+1].text} max: {status_num[i*3+2].text}")
-        print(f"{status_nome[6].text} = {status_num[6*3].text}")
+            attribute_status ={"nome":{status_nome[i].text.replace(" ","_")},"base":{status_num[i*3].text},"low":{status_num[i*3+1].text},"high":{status_num[i*3+2].text}}
+            status_list.append(attribute_status)
+        
+        pokemon = Pokemon(2,nome,"glass")
+        pokemon.setStatus(status_list)
+        pokemon.showStatus()
 
 
 
