@@ -26,7 +26,18 @@ class Pokemon:
         for i in self.status:
             print(i)
 
-    def get_json(self):
+    def get_json_simples(self):
+        pokemon={}
+        tipo = []
+        tipo.append(self.tipo1)
+        if(self.tipo2!=None):
+            tipo.append(self.tipo2)
+        pokemon["id"]=self.id
+        pokemon["nome"]= self.nome
+        pokemon['tipo']=tipo
+        return pokemon
+
+    def get_json_complete(self):
         pass
 
 

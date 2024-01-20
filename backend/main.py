@@ -10,12 +10,14 @@ from classes.Repository import Repository
 try:
     tempo_inicio = time.time()
     repo = Repository()
-
     repo.pokemons_por_jogo(0)
-    repo.exibir_pokemons_armazenados()
-    while(True):
+
+    while(False):
         nome = input("nome do pokemon:\n")
+        if(nome=="stop"):break
         repo.getPokemon(nome)
+
+        
 
     tempo_decorrido = time.time() - tempo_inicio
     print(f'Terminado! com o tempo de {tempo_decorrido:.5f}')
