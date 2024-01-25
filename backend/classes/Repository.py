@@ -3,6 +3,17 @@ from classes.Extrator import Extrator
 import json
 import os
 
+RED   = "\033[1;31m"  
+BLUE  = "\033[1;34m"
+CYAN  = "\033[1;36m"
+GREEN   = "\033[1;32m"  
+YELLOW  = "\033[1;33m"
+ROSA  = "\033[1;35m"
+ROXO = "\033[0;35m"
+RESET = "\033[0;0m"
+BOLD    = "\033[;1m"
+REVERSE = "\033[;7m"
+
 class Repository:
     def __init__(self):
         self.pokemons=[]
@@ -25,19 +36,28 @@ class Repository:
         for i in range(tamanholista):
             lista_de_imgs.append(f"data/images/{self.games[id_game]}/poke{i+1}.png")
         return lista_de_imgs
-
+    
+    def load_all_from_games(self):
+        for i in range(len(self.games)):
+            self.pokemons.clear()
+            print(f"{RED} Os dados do jogo {self.games[i]} serão salvos {RESET}")
+            self.pokemons_por_jogo(i)
+            print(f"{GREEN}Os dados do jogo {self.games[i]} foram salvos {RESET}")
+   
+    
 
     def get_json_from_file(self, id_game):
         caminho_arquivo = f"./data/json/{self.games[id_game]}/data.json"
         with open(caminho_arquivo, 'r') as arquivo:
             dado_json = json.load(arquivo)
         return dado_json
+    
 
     def verificar_repositorio(self,link):
         if not os.path.exists(link):
             os.makedirs(link)
 
-    def concatenar_dados(self, imagens_do_banco,dados_json_do_banco):
+    def concatenar_dados(self, dados_json_do_banco):
         for i in range(len(dados_json_do_banco)):
             dados_json_do_banco[i]['img']=f"/imagem/{i}"
         return dados_json_do_banco
@@ -60,13 +80,15 @@ class Repository:
         try:
             nome_arquivo = f"./data/images/{game_name}"
             self.verificar_repositorio(nome_arquivo)
-            print("taxa de carregamento: 0%")
+            print(f"{ROSA}taxa de carregamento:{RESET}{RED} 0%{RESET}")
             for i in range(len(imgs_list)):
                 resposta = Scraping.get_imgs(imgs_list[i])
                 with open(f"{nome_arquivo}/poke{i+1}.png",'wb') as arquivo:
                     arquivo.write(resposta)
                 taxa_de_carregamento = (i + 1) / len(imgs_list) * 100
-                print(f"taxa de carregamento: {taxa_de_carregamento:.2f}%")
+                nome = imgs_list[i].split("/")[6].split(".")[0]
+                
+                print(f"{YELLOW}{nome.title()}{RESET}{ROSA} taxa de carregamento: {RESET}{RED}{taxa_de_carregamento:.2f}%{RESET}")
         except Exception as e:
             print(e)
 
@@ -82,7 +104,7 @@ class Repository:
             return True
         
         except Exception as e:
-            print("Aconteceu um erro no processo de extração de nomes por jogo")
+            print(f"{RED}Aconteceu um erro no processo de extração de nomes por jogo{RESET}")
             print(e.args)
             return False
         
@@ -111,6 +133,6 @@ class Repository:
                 return False
             
         except Exception as e:
-            print(f"Aconteceu um erro no processo de extração de dados por pokemon\nPokemon com o erro: {nome}")
+            print(f"{RED}Aconteceu um erro no processo de extração de dados por pokemon\nPokemon com o erro: {nome}{RESET}")
             print(e.args)
             return False

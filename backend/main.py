@@ -8,10 +8,10 @@ from classes.Repository import Repository
 
 
 try:
+    
     tempo_inicio = time.time()
     repo = Repository()
-    repo.pokemons_por_jogo(0)
-
+    repo.load_all_from_games()
     while(False):
         nome = input("nome do pokemon:\n")
         if(nome=="stop"):break
