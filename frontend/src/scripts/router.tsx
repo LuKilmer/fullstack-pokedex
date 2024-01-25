@@ -29,6 +29,10 @@ const routerApp = createBrowserRouter([
         path:"/pokemon/:id",
         element:<Pokemon/>
       },
+      {
+        path:"/pokedex/:id",
+        element:<Pokedex/>
+      },
       //para links antigo
       {
         path: "pokedex-regional",

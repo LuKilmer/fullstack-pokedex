@@ -30,13 +30,22 @@ class Repository:
         self.pokemons_json=[]
 
     def get_imgs_from_file(self, id_game):
+        
         nome_arquivo = f"./data/images/{self.games[id_game]}"
         lista_de_imgs = []
         tamanholista = len(os.listdir(nome_arquivo))
         for i in range(tamanholista):
-            lista_de_imgs.append(f"data/images/{self.games[id_game]}/poke{i+1}.png")
+         
+            lista_de_imgs.append(f"./data/images/{self.games[id_game]}/poke{i+1}.png")
         return lista_de_imgs
     
+
+    def get_erro_json(self):
+        caminho_arquivo = f"./data/json/erro.json"
+        with open(caminho_arquivo, 'r') as arquivo:
+            dado_json = json.load(arquivo)
+        return dado_json
+
     def load_all_from_games(self):
         for i in range(len(self.games)):
             self.pokemons.clear()
@@ -57,9 +66,10 @@ class Repository:
         if not os.path.exists(link):
             os.makedirs(link)
 
-    def concatenar_dados(self, dados_json_do_banco):
+    def concatenar_dados(indice : int, dados_json_do_banco: str):
+        base_url = f"http://127.0.0.1:5000/pokedex/{indice}/"
         for i in range(len(dados_json_do_banco)):
-            dados_json_do_banco[i]['img']=f"/imagem/{i}"
+            dados_json_do_banco[i]['img']=f"{base_url}/imagem/{i}"
         return dados_json_do_banco
 
     def get_json_from_name(self, game_name):
