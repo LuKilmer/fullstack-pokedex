@@ -1,8 +1,7 @@
 interface Poke_Basic{
     id:number,
     nome:string,
-    tipo1: string,
-    tipo2?: string,
+    tipo: Array<string>,
     img: string
 }
 

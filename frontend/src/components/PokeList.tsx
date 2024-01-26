@@ -9,7 +9,7 @@ function PokeList(props: idPokedex) {
     const [error, setError] = useState<Error | null>(null);
     const [isLoaded, setIsLoaded] = useState(false);
     const [items, setItems] = useState<Poke_Basic[]>([]);
-    console.log(props.id)
+   
     useEffect(() => {
     fetch(`http://localhost:5000/pokedex/${props.id}`)
         .then(res => res.json())
@@ -17,6 +17,7 @@ function PokeList(props: idPokedex) {
           (result) => {
             setIsLoaded(true);
             setItems(result);
+            console.log(result);
           },
           
           (error) => {
@@ -24,7 +25,7 @@ function PokeList(props: idPokedex) {
             setError(error);
           }
         )
-    }, [])
+    },[props.id])
   
     if (error) {
       return <div>Error: {error.message}</div>;
@@ -35,9 +36,12 @@ function PokeList(props: idPokedex) {
         <div>
             <ul>
             {items.map(item => (
-                <li key={item.id}>
+                <li key={item.nome}>
                 <img src={item.img}></img> 
                 {item.nome} {item.id}
+                {item.tipo.map(tip =>(
+                  <p key={tip}>{tip}</p>
+                ))}
                 </li>
             ))}
             </ul>
