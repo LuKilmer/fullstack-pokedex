@@ -1,5 +1,6 @@
 from classes.Scraping import Scraping
 from classes.Extrator import Extrator
+from classes.TesterRepository import TesterRepository
 import json
 import os
 
@@ -13,30 +14,56 @@ ROXO = "\033[0;35m"
 RESET = "\033[0;0m"
 BOLD    = "\033[;1m"
 REVERSE = "\033[;7m"
+separeted="'"
 
 class Repository:
     def __init__(self):
-        self.pokemons=[]
-        self.games=[
-            'gold-silver-crystal',
-            'red-blue-yellow',
-            'firered-leafgreen',
-            'ruby-sapphire-emerald',
-            'platinum',
-            'heartgold-soulsilver',
-            'black-white',
-            'black-white-2'
+        self.pokemons=[
+            {'gold-silver-crystal':[]},
+            {'red-blue-yellow':[]},
+            {'firered-leafgreen':[]},
+            {'ruby-sapphire-emerald':[]},
+            {'platinum':[]},
+            {'heartgold-soulsilver':[]},
+            {'black-white':[]},
+            {'black-white-2':[]},
         ]
-        self.pokemons_json=[]
+        self.pokemons_json=[
+            {'gold-silver-crystal':[]},
+            {'red-blue-yellow':[]},
+            {'firered-leafgreen':[]},
+            {'ruby-sapphire-emerald':[]},
+            {'platinum':[]},
+            {'heartgold-soulsilver':[]},
+            {'black-white':[]},
+            {'black-white-2':[]},
+        ]
+        self.start_server_repository()
+
+    def start_server_repository(self):
+        try:
+            list_of_problems = self.check_file_integrity(self)
+            if(list_of_problems):
+                pass
+            else:
+                pass
+        except Exception as e:
+            raise Exception(f"{RED}ERRO AO ARQUIVOS{RESET}")
+        
+    def check_file_integrity(self):
+        #numero de nomes e repetições
+        #esses nomes estão nos arquivos json e id unico
+        return True
+
 
     def get_imgs_from_file(self, id_game):
-        
-        nome_arquivo = f"./data/images/{self.games[id_game]}"
+        game_name = self.pokemons[id_game].keys().__str__().split(separeted)[1]
+        nome_arquivo = f"./data/images/{game_name}"
         lista_de_imgs = []
         tamanholista = len(os.listdir(nome_arquivo))
         for i in range(tamanholista):
          
-            lista_de_imgs.append(f"./data/images/{self.games[id_game]}/poke{i+1}.png")
+            lista_de_imgs.append(f"./data/images/{game_name}/poke{i+1}.png")
         return lista_de_imgs
     
 
@@ -46,7 +73,9 @@ class Repository:
             dado_json = json.load(arquivo)
         return dado_json
 
+
     def load_all_from_games(self):
+
         for i in range(len(self.games)):
             self.pokemons.clear()
             print(f"{RED} Os dados do jogo {self.games[i]} serão salvos {RESET}")
@@ -56,7 +85,8 @@ class Repository:
     
 
     def get_json_from_file(self, id_game):
-        caminho_arquivo = f"./data/json/{self.games[id_game]}/data.json"
+        
+        caminho_arquivo = f"./data/json/{self.pokemons[id_game].keys().__str__().split(separeted)[1]}/data.json"
         with open(caminho_arquivo, 'r') as arquivo:
             dado_json = json.load(arquivo)
         return dado_json
@@ -102,15 +132,16 @@ class Repository:
         except Exception as e:
             print(e)
 
-    def pokemons_por_jogo(self, id_game:int):
+    def pokemons_by_games(self, id_game):
         try:
+            game_name = self.pokemons[id_game].keys().__str__().split(separeted)[1]
             if(id_game>len(self.games)-1 or id_game<0):
                 raise Exception("id informado é inválido")
-            url = "https://pokemondb.net/pokedex/game/" + self.games[id_game]
+            url = "https://pokemondb.net/pokedex/game/" + game_name
             elemento_html = Scraping.obter_html(url)
             self.pokemons, imgs_list = Extrator.get_class_pokemon_por_html(elemento_html)
-            self.get_json_from_name(self.games[id_game])
-            self.save_img(self.games[id_game],imgs_list)
+            self.get_json_from_name(game_name)
+            self.save_img(game_name,imgs_list)
             return True
         
         except Exception as e:
@@ -118,20 +149,26 @@ class Repository:
             print(e.args)
             return False
         
-    def exibir_pokemons_armazenados(self):
+    def show_stored_pokemons(self):
         if(len(self.pokemons)==0):
             print("Sem pokemons catalogados")
         else:
             for pokemon in self.pokemons:
                 print(str(pokemon))
 
-    def findPokemonNaLista(self, nome):
+    def find_pokemon_in_list(self, nome):
         for pokemon in self.pokemons:
             if(nome.lower() == (pokemon.nome).lower()):
                 return True
         return False
+    
+    def load_names_by_json(self):
+        for i in range(len(self.pokemons_json)):
+            self.pokemons_json[i] = self.get_json_from_file(i)
+        for i in range(len(self.pokemons_json)):
+            print(len(self.pokemons_json[i]))
 
-    def getPokemon(self,nome):
+    def get_pokemon(self,nome):
         try:
             if(self.findPokemonNaLista(nome)):
                 url = "https://pokemondb.net/pokedex/" + nome

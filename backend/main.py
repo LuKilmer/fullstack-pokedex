@@ -11,11 +11,9 @@ try:
     
     tempo_inicio = time.time()
     repo = Repository()
-    repo.load_all_from_games()
-    while(False):
-        nome = input("nome do pokemon:\n")
-        if(nome=="stop"):break
-        repo.getPokemon(nome)
+    
+   
+    repo.load_names_by_json()
 
         
 
