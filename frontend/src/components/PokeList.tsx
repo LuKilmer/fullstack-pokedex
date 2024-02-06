@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import Poke_Basic from "../model/Pokemon";
+import {PokeCard} from "./PokeCard";
+import './PokeList.css'
 
 interface idPokedex{
     id:string
@@ -34,15 +36,9 @@ function PokeList(props: idPokedex) {
     } else {
       return (
         <div>
-            <ul>
+            <ul className="card-list">
             {items.map(item => (
-                <li key={item.nome}>
-                <img src={item.img}></img> 
-                {item.nome} {item.id}
-                {item.tipo.map(tip =>(
-                  <p key={tip}>{tip}</p>
-                ))}
-                </li>
+                <PokeCard props={item}/>
             ))}
             </ul>
 

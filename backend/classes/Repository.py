@@ -1,6 +1,5 @@
 from classes.Scraping import Scraping
 from classes.Extrator import Extrator
-from classes.TesterRepository import TesterRepository
 import json
 import os
 
@@ -42,13 +41,14 @@ class Repository:
 
     def start_server_repository(self):
         try:
-            list_of_problems = self.check_file_integrity(self)
+            list_of_problems = self.check_file_integrity()
             if(list_of_problems):
                 pass
             else:
                 pass
         except Exception as e:
-            raise Exception(f"{RED}ERRO AO ARQUIVOS{RESET}")
+            print(e.args)
+            print(f"{RED}ERRO AO ARQUIVOS{RESET}")
         
     def check_file_integrity(self):
         #numero de nomes e repetições

@@ -48,7 +48,6 @@ def index_by_game(indice):
 def obter_imagem(indice, id):
     with current_app.app_context():
         imagens_do_banco = repo.get_imgs_from_file(indice)
-        print(len(imagens_do_banco))
         if(id<len(imagens_do_banco)):
             return send_file(imagens_do_banco[id], mimetype='image/png')
         else:

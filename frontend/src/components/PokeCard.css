@@ -1,0 +1,39 @@
+.card-type-session{
+    display: flex;
+    justify-content: center;
+    background-color: rgb(255, 255, 255);
+    max-width: 120px;
+    margin:auto;
+}
+.card-pokemon{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: rgb(255, 255, 255);
+    max-width: 140px;
+    min-width: 130px;
+    padding: 00px;
+    margin:2px;
+
+}
+
+.card-name{
+    margin:10px;
+}
+p{
+    color:rgb(136, 136, 136);
+    font-weight:400;
+    margin:0px;
+    font-size: 14px;
+    text-align: center;
+}
+
+img{
+    width:80px;
+    background-color: white;
+
+}
+
+.card-type-session a{
+    margin:5px;
+}
