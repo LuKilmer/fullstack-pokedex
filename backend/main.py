@@ -13,7 +13,7 @@ try:
     repo = Repository()
     
    
-    repo.load_names_by_json()
+    repo.load_pokemons_by_json()
 
         
 

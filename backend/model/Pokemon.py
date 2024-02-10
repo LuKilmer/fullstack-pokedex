@@ -11,7 +11,9 @@ class Pokemon:
         self.tipo2=tipo2
         self.move_levelup_id = []
         self.status = []
-       
+    
+    def getNome(self):
+        return self.nome
 
     def setStatus(self, status):
         self.status = status

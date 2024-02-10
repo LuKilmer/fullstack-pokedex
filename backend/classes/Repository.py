@@ -1,3 +1,4 @@
+from model.Pokemon import Pokemon
 from classes.Scraping import Scraping
 from classes.Extrator import Extrator
 import json
@@ -73,9 +74,10 @@ class Repository:
             dado_json = json.load(arquivo)
         return dado_json
 
+    def reload_from_game(self, game_id):
+        print(self.get_json_from_file(game_id))
 
     def load_all_from_games(self):
-
         for i in range(len(self.games)):
             self.pokemons.clear()
             print(f"{RED} Os dados do jogo {self.games[i]} serão salvos {RESET}")
@@ -92,7 +94,7 @@ class Repository:
         return dado_json
     
 
-    def verificar_repositorio(self,link):
+    def ensure_directory_exists(self,link):
         if not os.path.exists(link):
             os.makedirs(link)
 
@@ -104,49 +106,72 @@ class Repository:
 
     def get_json_from_name(self, game_name):
         try:
-            
             nome_arquivo = f"./data/json/{game_name}"
             self.pokemons_json.clear()
+
             for pokemon in self.pokemons:
                 self.pokemons_json.append(pokemon.get_json_simples())
-            self.verificar_repositorio(nome_arquivo)
+
+            self.ensure_directory_exists(nome_arquivo)
+
             with open(nome_arquivo+"/data.json", 'w') as f:
                 json.dump(self.pokemons_json, f)
+
+        except FileNotFoundError as fnfe:
+            print(f"Erro: Diretório não encontrado - {fnfe}")
+
         except Exception as e:
-            print(e)
+            print(f"Erro ao criar arquivo JSON: {e}")
         
 
-    def save_img(self, game_name, imgs_list):
+    def save_images(self, game_name, imgs_list):
         try:
-            nome_arquivo = f"./data/images/{game_name}"
-            self.verificar_repositorio(nome_arquivo)
-            print(f"{ROSA}taxa de carregamento:{RESET}{RED} 0%{RESET}")
-            for i in range(len(imgs_list)):
-                resposta = Scraping.get_imgs(imgs_list[i])
-                with open(f"{nome_arquivo}/poke{i+1}.png",'wb') as arquivo:
-                    arquivo.write(resposta)
-                taxa_de_carregamento = (i + 1) / len(imgs_list) * 100
-                nome = imgs_list[i].split("/")[6].split(".")[0]
-                
-                print(f"{YELLOW}{nome.title()}{RESET}{ROSA} taxa de carregamento: {RESET}{RED}{taxa_de_carregamento:.2f}%{RESET}")
-        except Exception as e:
-            print(e)
+            directory_path = f"./data/images/{game_name}"
+            self.ensure_directory_exists(directory_path)
 
-    def pokemons_by_games(self, id_game):
+            print(f"{ROSA}Taxa de carregamento:{RESET}{RED} 0%{RESET}")
+
+            for i, img_url in enumerate(imgs_list, start=1):
+                image_data = Scraping.get_imgs(img_url)
+                filename = f"{directory_path}/poke{i}.png"
+
+                with open(filename, 'wb') as file:
+                    file.write(image_data)
+
+                load_percentage = (i / len(imgs_list)) * 100
+                pokemon_name = img_url.split("/")[6].split(".")[0]
+
+                print(f"{YELLOW}{pokemon_name.title()}{RESET}{ROSA} Taxa de carregamento: {RESET}{RED}{load_percentage:.2f}%{RESET}")
+
+        except Exception as e:
+            print(f"Erro ao salvar imagens: {e}")
+
+
+    def extract_pokemons_by_game(self, id_game):
         try:
-            game_name = self.pokemons[id_game].keys().__str__().split(separeted)[1]
-            if(id_game>len(self.games)-1 or id_game<0):
-                raise Exception("id informado é inválido")
-            url = "https://pokemondb.net/pokedex/game/" + game_name
-            elemento_html = Scraping.obter_html(url)
-            self.pokemons, imgs_list = Extrator.get_class_pokemon_por_html(elemento_html)
+            if id_game < 0 or id_game >= len(self.pokemons):
+                raise ValueError("ID informado é inválido")
+
+            game_name = list(self.pokemons[id_game].keys())[0]
+            url = f"https://pokemondb.net/pokedex/game/{game_name}"
+            
+            
+            html_element = Scraping.obter_html(url)
+            self.pokemons, imgs_list = Extrator.get_class_pokemon_por_html(html_element)
+            
+           
             self.get_json_from_name(game_name)
-            self.save_img(game_name,imgs_list)
+            self.save_images(game_name, imgs_list)
+            
             return True
         
+        except ValueError as ve:
+            print(f"{RED}Erro: {str(ve)}{RESET}")
+            return False
+
         except Exception as e:
             print(f"{RED}Aconteceu um erro no processo de extração de nomes por jogo{RESET}")
-            print(e.args)
+            print(f"Detalhes do erro: {str(e)}")
             return False
         
     def show_stored_pokemons(self):
@@ -157,16 +182,61 @@ class Repository:
                 print(str(pokemon))
 
     def find_pokemon_in_list(self, nome):
-        for pokemon in self.pokemons:
-            if(nome.lower() == (pokemon.nome).lower()):
-                return True
+        count = 0
+        for index in range(len(self.pokemons)):
+            for pokemon in self.pokemons[index][f"{self.pokemons[index].keys().__str__().split(separeted)[1]}"]:
+                if pokemon.nome == nome:
+                    return pokemon
         return False
+            
+    def extract_complete_data_pokemon(self, nome):
+        try:
+            url = f"https://pokemondb.net/pokedex/{nome}"
+            html_element = Scraping.obter_html(url)
+            pokemon = Extrator.get_data_complete(html_element)
+            return pokemon
+
+        except Exception as e:
+            print(e.args)
+        
+  
+    def transform_json(self):
+        for i in range(len(self.pokemons_json)):
+            for pokemon in self.pokemons_json[i]:
+                
+                if(len(pokemon["tipo"])==2):
+                    poke = Pokemon(pokemon["id"],pokemon["nome"],pokemon["tipo"][0],pokemon["tipo"][1])
+                else:
+                    poke = Pokemon(pokemon["id"],pokemon["nome"],pokemon["tipo"][0])
+                self.pokemons[i][f"{self.pokemons[i].keys().__str__().split(separeted)[1]}"].append(poke)
+
+            
+        '''
+        for game in self.pokemons_json:
+            print(len(game))
+            for pokemon in game:
+                if(len(pokemon["tipo"])==2):
+                    poke = Pokemon(pokemon["id"],pokemon["nome"],pokemon["tipo"][0],pokemon["tipo"][1])
+                else:
+                    poke = Pokemon(pokemon["id"],pokemon["nome"],pokemon["tipo"][0])
+                self.pokemons.append(poke)
+        '''
+            
+       
+
+    def load_pokemons_by_json(self):
+        try:
+            if(len(self.pokemons_json)==0):
+                raise Exception("Não há dados salvos nos arquivos")
+            for i in range(len(self.pokemons_json)):
+                self.pokemons_json[i] = self.get_json_from_file(i)
+                print(f"{GREEN}Dados do jogo {self.pokemons[i].keys().__str__().split(separeted)[1]} completo{RESET}")
+            self.transform_json()
+        except Exception as e:
+            print(f"{RED}{e.args}{RESET}")
+
     
-    def load_names_by_json(self):
-        for i in range(len(self.pokemons_json)):
-            self.pokemons_json[i] = self.get_json_from_file(i)
-        for i in range(len(self.pokemons_json)):
-            print(len(self.pokemons_json[i]))
+
 
     def get_pokemon(self,nome):
         try:

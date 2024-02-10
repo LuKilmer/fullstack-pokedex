@@ -37,6 +37,10 @@ class Extrator:
         pokemon.showStatus()
 
 
+    @staticmethod
+    def get_data_complete(element_html: BeautifulSoup):
+        print(element_html)
+
 
 
     @staticmethod
