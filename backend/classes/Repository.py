@@ -38,10 +38,12 @@ class Repository:
             {'black-white':[]},
             {'black-white-2':[]},
         ]
+
         self.start_server_repository()
 
     def start_server_repository(self):
         try:
+            self.load_pokemons_by_json()
             list_of_problems = self.check_file_integrity()
             if(list_of_problems):
                 pass
@@ -63,7 +65,6 @@ class Repository:
         lista_de_imgs = []
         tamanholista = len(os.listdir(nome_arquivo))
         for i in range(tamanholista):
-         
             lista_de_imgs.append(f"./data/images/{game_name}/poke{i+1}.png")
         return lista_de_imgs
     
@@ -191,10 +192,14 @@ class Repository:
             
     def extract_complete_data_pokemon(self, nome):
         try:
-            url = f"https://pokemondb.net/pokedex/{nome}"
-            html_element = Scraping.obter_html(url)
-            pokemon = Extrator.get_data_complete(html_element)
-            return pokemon
+            pokemon = self.find_pokemon_in_list(nome)
+            if pokemon:
+                url = f"https://pokemondb.net/pokedex/{pokemon.nome}"
+                html_element = Scraping.obter_html(url)
+                pokemon = Extrator.get_data_pokemon(html_element, pokemon)
+                return pokemon
+            else:
+                raise Exception("Pokemon não existe, ou nome está errado")
 
         except Exception as e:
             print(e.args)
