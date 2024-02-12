@@ -22,15 +22,14 @@ class Extrator:
     @staticmethod
     def get_data_pokemon(elemento_html: BeautifulSoup, pokemon : Pokemon):
         tag_html = elemento_html.find('main', id='main').find_all('table',class_="vitals-table")
-        
         Extrator.get_breeding_data(pokemon,tag_html[2])
-        #pokemon.get_breeding()
         Extrator.get_training_data(pokemon,tag_html[1])
-        #pokemon.get_training()
         Extrator.get_base_data(pokemon,tag_html[0])
+        
         #status_list =  Extrator.get_status(tag_html)
         #pokemon.set_status(status_list)
         #pokemon.show_status()
+        return pokemon
 
     @staticmethod
     def get_base_data(pokemon: Pokemon, tag_html: Tag):
@@ -49,9 +48,18 @@ class Extrator:
                     suport+=aux
             else:
                 flag=True
+        especie = componentes[2].text
+        altura = componentes[3].text.split(" ")[0].replace("\xa0","")
+        peso = componentes[4].text.split(" ")[0].replace("\xa0","")
+        habilidades=[]
+        hidden_habilidades=[]
+        for ind in componentes[5].find_all("small"):
+            hidden_habilidades.append(ind.text.split(" (")[0])
+        for ind in componentes[5].find_all("a"):
+            if  ind.text not in hidden_habilidades:
+                habilidades.append(ind.text)
+        pokemon.set_data(peso,altura,habilidades,hidden_habilidades,extra_id,especie)
         
-        print(extra_id)
-        print(len(extra_id))
     
     @staticmethod
     def get_breeding_data(pokemon: Pokemon, tag_html: Tag):

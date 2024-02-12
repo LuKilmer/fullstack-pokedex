@@ -202,7 +202,7 @@ class Repository:
                 raise Exception("Pokemon não existe, ou nome está errado")
 
         except Exception as e:
-            print(e.args)
+            print(f"{RED}{e.args}{RESET}")
         
   
     def transform_json(self):
