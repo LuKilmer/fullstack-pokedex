@@ -25,11 +25,24 @@ class Extrator:
         Extrator.get_breeding_data(pokemon,tag_html[2])
         Extrator.get_training_data(pokemon,tag_html[1])
         Extrator.get_base_data(pokemon,tag_html[0])
+        data_tables = elemento_html.find('main', id='main').find_all('table',class_="data-table")
+        print(len(data_tables))
         
+        Extrator.get_move_names(data_tables[0])
+
+        Extrator.get_move_names(data_tables[1])
+        Extrator.get_move_names(data_tables[2])
         #status_list =  Extrator.get_status(tag_html)
         #pokemon.set_status(status_list)
         #pokemon.show_status()
         return pokemon
+
+    @staticmethod
+    def get_move_names(data_table):
+        componentes=data_table.find_all('tr')
+        for i in range(len(componentes)):
+            print(f"{i}: {componentes[i].text}")
+
 
     @staticmethod
     def get_base_data(pokemon: Pokemon, tag_html: Tag):
