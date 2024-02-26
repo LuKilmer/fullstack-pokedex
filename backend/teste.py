@@ -4,5 +4,5 @@ from classes.Repository import Repository
 repo = Repository()
 entrada="pikachu"
 
-repo.extract_moves()
+print(repo.get_pokemon(entrada.title()))
  

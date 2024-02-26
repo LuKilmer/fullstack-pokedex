@@ -35,7 +35,7 @@ class Pokemon:
 
 
     
-    def getNome(self):
+    def get_nome(self):
         return self.nome
 
     def set_status(self, status):

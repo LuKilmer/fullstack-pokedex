@@ -38,8 +38,9 @@ class Repository:
             {'black-white':[]},
             {'black-white-2':[]},
         ]
-
-        #self.start_server_repository()
+        self.movimentos=[]
+    
+        self.start_server_repository()
 
     def start_server_repository(self):
         try:
@@ -61,10 +62,10 @@ class Repository:
 
     def extract_moves(self):
         base_url = "https://pokemondb.net/move/generation/"
-        for i in range(1,6,1):
-            print(i)
-        html_element = Scraping.obter_html(base_url+"1")
-        Extrator.get_moves_by_dex(html_element)
+        for i in range(1,7,1):
+            html_element = Scraping.obter_html(base_url+f"{i}")
+            self.movimentos.extend(Extrator.get_moves_by_dex(html_element))
+            print(len(self.movimentos))
 
     def get_imgs_from_file(self, id_game):
         game_name = self.pokemons[id_game].keys().__str__().split(separeted)[1]
@@ -74,7 +75,12 @@ class Repository:
         for i in range(tamanholista):
             lista_de_imgs.append(f"./data/images/{game_name}/poke{i+1}.png")
         return lista_de_imgs
-    
+
+    def complete_json_pokemon(self):
+        pass
+
+    def json_move(self):
+        pass
 
     def get_erro_json(self):
         caminho_arquivo = f"./data/json/erro.json"
@@ -246,16 +252,16 @@ class Repository:
         except Exception as e:
             print(f"{RED}{e.args}{RESET}")
 
-    
+
 
 
     def get_pokemon(self,nome):
         try:
-            if(self.findPokemonNaLista(nome)):
+            if(self.find_pokemon_in_list(nome)):
                 url = "https://pokemondb.net/pokedex/" + nome
             
                 elemento_html = Scraping.obter_html(url)
-                pokemon = Extrator.get_dados_pokemon(elemento_html)
+                pokemon = Extrator.get_data_complete(elemento_html)
                 return pokemon
             else:
                 return False
