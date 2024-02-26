@@ -8,6 +8,28 @@ class Extrator:
         print(f" status do {nome} foi extraido com sucesso")
 
     @staticmethod
+    def extract_separed_move(move_html: Tag):
+        tag_html = move_html.find_all('td')
+        if tag_html:
+            for tag_com_classe in tag_html:
+                print(tag_com_classe)
+            
+        else:
+            raise Exception('Erro ao extrair movimento invidividualmente do elemento html')
+        
+
+    @staticmethod
+    def get_moves_by_dex(elemento_html: BeautifulSoup):
+        tag_html = elemento_html.find_all('tr')
+        movimentos = []
+        if tag_html:
+            for tag_com_classe in tag_html:
+                movimentos.append(Extrator.extract_separed_move(tag_com_classe))
+        else:
+            raise Exception('Erro ao extrair movimento do elemento html')
+
+   
+    @staticmethod
     def get_nome_por_html(elemento_html: BeautifulSoup):
         nomes = []
         tag_html = elemento_html.find_all('a', class_='ent-name')

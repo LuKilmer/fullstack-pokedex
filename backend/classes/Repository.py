@@ -39,7 +39,7 @@ class Repository:
             {'black-white-2':[]},
         ]
 
-        self.start_server_repository()
+        #self.start_server_repository()
 
     def start_server_repository(self):
         try:
@@ -58,6 +58,13 @@ class Repository:
         #esses nomes estão nos arquivos json e id unico
         return True
 
+
+    def extract_moves(self):
+        base_url = "https://pokemondb.net/move/generation/"
+        for i in range(1,6,1):
+            print(i)
+        html_element = Scraping.obter_html(base_url+"1")
+        Extrator.get_moves_by_dex(html_element)
 
     def get_imgs_from_file(self, id_game):
         game_name = self.pokemons[id_game].keys().__str__().split(separeted)[1]
@@ -183,7 +190,6 @@ class Repository:
                 print(str(pokemon))
 
     def find_pokemon_in_list(self, nome):
-        count = 0
         for index in range(len(self.pokemons)):
             for pokemon in self.pokemons[index][f"{self.pokemons[index].keys().__str__().split(separeted)[1]}"]:
                 if pokemon.nome == nome:
